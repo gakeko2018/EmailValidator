@@ -50,7 +50,7 @@ function copyAllFiles(req, res, savPath) {
 }
 
 const upper =
-  '<!DOCTYPE html> <html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="X-UA-Compatible" content="ie=edge" /><title>Bulk Email Checker</title> <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"/> </head> <body> <script> document.addEventListener("DOMContentLoaded", function() { var elems = document.querySelectorAll(".collapsible"); var instances = M.Collapsible.init(elems); }); </script><script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script> <main class="container"> <nav> <div class="nav-wrapper"><a href="/" class="brand-logo"><i class="material-icons">cloud</i>EmC</a></div> </nav><section><ul class="collapsible">';
+  '<!DOCTYPE html> <html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="X-UA-Compatible" content="ie=edge" /><title>Bulk Email Checker</title> <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"/> </head> <body> <script> document.addEventListener("DOMContentLoaded", function() { var elems = document.querySelectorAll(".collapsible"); var instances = M.Collapsible.init(elems); }); </script><script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script> <main class="container"> <nav> <div class="nav-wrapper"><a href="/" class="brand-logo"><i class="material-icons">cloud</i>EmC</a></div> </nav><section><div class="container" style="text-align:center"><a href="results.json"> Click here to save the results as JSON. </a></div><ul class="collapsible">';
 const lower =
   '</ul> </section> </main> <script> document.addEventListener("DOMContentLoaded", function() { var elems = document.querySelectorAll(".collapsible"); var instances = M.Collapsible.init(elems); }); </script><script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script></body></html>';
 const sub1 =
@@ -66,10 +66,11 @@ function finish(req, res) {
   console.log("counter = " + counter);
 
   if (counter == ultimateListLength) {
-    fs.appendFileSync("./views/result.html", lower);
+    fs.appendFileSync("./views/result.ejs", lower);
+    fs.writeFileSync("./public/results.json", JSON.stringify({ ...result }));
     fs.unlinkSync(uploadedFile);
-    //res.render("result.html");
-    res.send(ultimateArray);
+    res.render("result");
+    //res.send({...result});
   }
 }
 function verifyItem(req, res, item, callback) {
@@ -133,7 +134,7 @@ function verifyItem(req, res, item, callback) {
     }
 
     fs.appendFileSync(
-      "./views/result.html",
+      "./views/result.ejs",
       sub1 + insertedTitle + sub2 + insertedDetails + sub3
     );
     insertedTitle = "";
@@ -158,7 +159,7 @@ router.post("/", function(req, res, next) {
     });
   }
 
-  fs.writeFileSync("./views/result.html", upper);
+  fs.writeFileSync("./views/result.ejs", upper);
   copyAllFiles(req, res, "theList.txt");
 });
 

@@ -1,4 +1,6 @@
 var express = require("express");
+var path = require("path");
+
 var router = express.Router();
 const fs = require("fs");
 const multer = require("multer");
@@ -26,18 +28,17 @@ let upload = multer({ storage: storage });
 function copyAllFiles(req, res, savPath) {
   var filecontent = req.body.textarea1;
   fs.writeFileSync(savPath, "");
-
+  let srcPath = path.join(__dirname, "default.txt");
   if (req.file) {
-    srcPath = "./saved/" + req.file.filename;
-  } else {
-    srcPath = "./default.txt";
+    srcPath = path.join(__dirname, "saved", req.file.filename);
   }
 
   textract.fromFileWithPath(srcPath, function(error, text) {
+    console.log(srcPath);
     if (text != null) {
       filecontent += text;
     }
-    if (filecontent=="") filecontent="example@domain.com"
+    if (filecontent == "") filecontent = "example@domain.com";
     let addressList = filecontent.split(/,|;|\s|\r|\n/);
     let addressObject = {};
     addressList.forEach(address => {

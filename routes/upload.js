@@ -29,6 +29,7 @@ function copyAllFiles(req, res) {
   var filecontent = req.body.textarea1 + "\n";
   let savPath = path.join(__dirname, "saved", "thelist.txt");
   fs.writeFileSync(savPath, "");
+
   let srcPath = path.join(__dirname, "default.txt");
   if (req.file) {
     srcPath = path.join(__dirname, "saved", req.file.filename);
@@ -39,7 +40,7 @@ function copyAllFiles(req, res) {
     if (text != null) {
       filecontent += text;
     }
-    if (filecontent == "") filecontent = "example@domain.com";
+    if (filecontent == "\n") filecontent = "example@domain.com";
     let addressList = filecontent.split(/,|;|\s|\r|\n/);
     let addressObject = {};
     addressList.forEach(address => {

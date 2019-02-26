@@ -1,36 +1,39 @@
 var express = require("express");
 var router = express.Router();
 const fs = require("fs");
-const multer = require("multer");
 const verifier = require("email-verify");
 const textract = require("textract");
+const fileUpload = require("express-fileupload");
+
 let ultimateArray = [];
 let ultimateListLength = 0;
-const fileUpload = require("express-fileupload");
+let uploadedFile;
 router.use(fileUpload());
 
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 
+let counter = 0;
+let result = [];
 //reads all files,
 function copyAllFiles(req, res, savPath) {
   var filecontent = req.body.textarea1;
   fs.writeFileSync(savPath, "");
-  let srcPath = "";
-
-  if (Object.keys(req.files).length == 0) {
-    srcPath = "./default.txt";
-  } else srcPath = "./" + req.files.fileInputName.name;
+  let srcPath = uploadedFile;
 
   textract.fromFileWithPath(srcPath, function(error, text) {
-    if (text != null) {
-      filecontent += text;
-    }
-    if (filecontent == "") filecontent = "example@domain.com";
+    if (text == null || text === "undefined" || text == "") {
+      if (filecontent == "") filecontent = "example@domain.com";
+    } else filecontent += "\n" + text;
     let addressList = filecontent.split(/,|;|\s|\r|\n/);
     let addressObject = {};
     addressList.forEach(address => {
-      if (address.length > 0 && !(address in [";", ",", "\n"])) {
+      if (
+        address.length > 0 &&
+        address != ";" &&
+        address != "," &&
+        address != "\n"
+      ) {
         addressObject[address] = true;
       }
     });
@@ -45,9 +48,6 @@ function copyAllFiles(req, res, savPath) {
     });
   });
 }
-
-let counter = 0;
-let result = [];
 
 const upper =
   '<!DOCTYPE html> <html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="X-UA-Compatible" content="ie=edge" /><title>Bulk Email Checker</title> <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"/> </head> <body> <script> document.addEventListener("DOMContentLoaded", function() { var elems = document.querySelectorAll(".collapsible"); var instances = M.Collapsible.init(elems); }); </script><script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script> <main class="container"> <nav> <div class="nav-wrapper"><a href="/" class="brand-logo"><i class="material-icons">cloud</i>EmC</a></div> </nav><section><ul class="collapsible">';
@@ -67,7 +67,7 @@ function finish(req, res) {
 
   if (counter == ultimateListLength) {
     fs.appendFileSync("./views/result.html", lower);
-    fs.unlinkSync("./" + req.files.fileInputName.name);
+    fs.unlinkSync(uploadedFile);
     res.render("result.html");
   }
 }
@@ -145,14 +145,20 @@ function verifyItem(req, res, item, callback) {
 /* POST request */
 router.post("/", function(req, res, next) {
   counter = 0;
-  console.log(req.files);
-  let myFile = req.files.fileInputName;
-  myFile.mv("./" + req.files.fileInputName.name, function(err) {
-    if (err) return res.status(500).send(err);
-  });
+  fs.writeFileSync("default.txt");
+
+  if (Object.keys(req.files).length == 0) {
+    uploadedFile = "default.txt";
+  } else {
+    let myFile = req.files.fileInputName;
+    uploadedFile = req.files.fileInputName.name;
+    myFile.mv(uploadedFile, function(err) {
+      if (err) return res.status(500).send(err);
+    });
+  }
 
   fs.writeFileSync("./views/result.html", upper);
-  copyAllFiles(req, res, "./theList.txt");
+  copyAllFiles(req, res, "theList.txt");
 });
 
 module.exports = router;

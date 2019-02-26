@@ -1,6 +1,4 @@
 var express = require("express");
-var path = require("path");
-
 var router = express.Router();
 const fs = require("fs");
 const multer = require("multer");
@@ -8,39 +6,27 @@ const verifier = require("email-verify");
 const textract = require("textract");
 let ultimateArray = [];
 let ultimateListLength = 0;
-
-//The  uploaded file is saved
-var storage = multer.diskStorage({
-  destination: function(req, file, cb) {
-    cb(null, path.join(__dirname, "saved"));
-  },
-  filename: function(req, file, cb) {
-    cb(null, file.originalname);
-  }
-});
+const fileUpload = require("express-fileupload");
+router.use(fileUpload());
 
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 
-let upload = multer({ storage: storage });
-
 //reads all files,
-function copyAllFiles(req, res) {
-  var filecontent = req.body.textarea1 + "\n";
-  let savPath = path.join(__dirname, "saved", "thelist.txt");
+function copyAllFiles(req, res, savPath) {
+  var filecontent = req.body.textarea1;
   fs.writeFileSync(savPath, "");
+  let srcPath = "";
 
-  let srcPath = path.join(__dirname, "default.txt");
-  if (req.file) {
-    srcPath = path.join(__dirname, "saved", req.file.filename);
-  }
+  if (Object.keys(req.files).length == 0) {
+    srcPath = "./default.txt";
+  } else srcPath = "./" + req.files.fileInputName.name;
 
   textract.fromFileWithPath(srcPath, function(error, text) {
-    console.log(error);
     if (text != null) {
       filecontent += text;
     }
-    if (filecontent == "\n") filecontent = "example@domain.com";
+    if (filecontent == "") filecontent = "example@domain.com";
     let addressList = filecontent.split(/,|;|\s|\r|\n/);
     let addressObject = {};
     addressList.forEach(address => {
@@ -52,7 +38,7 @@ function copyAllFiles(req, res) {
     ultimateListLength = addressArray.length;
     addressArray.forEach(item => {
       ultimateArray.push(item);
-      verifyItem(res, item, finish);
+      verifyItem(req, res, item, finish);
       fs.appendFileSync(savPath, item + "\n", function(err) {
         if (err) throw err;
       });
@@ -75,16 +61,17 @@ var insertedTitle = "";
 var insertedDetails = "";
 const verifyCodes = verifier.verifyCodes;
 
-function finish(res) {
+function finish(req, res) {
   counter++;
   console.log("counter = " + counter);
 
   if (counter == ultimateListLength) {
     fs.appendFileSync("./views/result.html", lower);
+    fs.unlinkSync("./" + req.files.fileInputName.name);
     res.render("result.html");
   }
 }
-function verifyItem(res, item, callback) {
+function verifyItem(req, res, item, callback) {
   item = item.trim();
   verifier.verify(item, function(err, info) {
     if (info.success) {
@@ -151,15 +138,21 @@ function verifyItem(res, item, callback) {
     insertedTitle = "";
     insertedDetails = "";
 
-    callback(res);
+    callback(req, res);
   });
 }
 
 /* POST request */
-router.post("/", upload.single("fileInputName"), function(req, res, next) {
+router.post("/", function(req, res, next) {
   counter = 0;
+  console.log(req.files);
+  let myFile = req.files.fileInputName;
+  myFile.mv("./" + req.files.fileInputName.name, function(err) {
+    if (err) return res.status(500).send(err);
+  });
+
   fs.writeFileSync("./views/result.html", upper);
-  copyAllFiles(req, res);
+  copyAllFiles(req, res, "./theList.txt");
 });
 
 module.exports = router;

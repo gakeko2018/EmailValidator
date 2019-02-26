@@ -57,8 +57,8 @@ const sub1 =
   '<li> <div class="collapsible-header"> <i class="material-icons">email</i>';
 const sub2 = '</div> <div class="collapsible-body">';
 const sub3 = "</div> </li>";
-var insertedTitle = "";
-var insertedDetails = "";
+let insertedTitle = "";
+let insertedDetails = "";
 const verifyCodes = verifier.verifyCodes;
 
 function finish(req, res) {

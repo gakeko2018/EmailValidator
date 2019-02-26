@@ -68,7 +68,8 @@ function finish(req, res) {
   if (counter == ultimateListLength) {
     fs.appendFileSync("./views/result.html", lower);
     fs.unlinkSync(uploadedFile);
-    res.render("result.html");
+    //res.render("result.html");
+    res.send(ultimateArray);
   }
 }
 function verifyItem(req, res, item, callback) {

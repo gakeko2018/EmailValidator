@@ -12,7 +12,7 @@ let ultimateListLength = 0;
 //The  uploaded file is saved
 var storage = multer.diskStorage({
   destination: function(req, file, cb) {
-    cb(null, "./saved");
+    cb(null, path.join(__dirname, "saved"));
   },
   filename: function(req, file, cb) {
     cb(null, file.originalname);
@@ -25,8 +25,9 @@ router.use(express.urlencoded({ extended: true }));
 let upload = multer({ storage: storage });
 
 //reads all files,
-function copyAllFiles(req, res, savPath) {
-  var filecontent = req.body.textarea1;
+function copyAllFiles(req, res) {
+  var filecontent = req.body.textarea1 + "\n";
+  let savPath = path.join(__dirname, "saved", "thelist.txt");
   fs.writeFileSync(savPath, "");
   let srcPath = path.join(__dirname, "default.txt");
   if (req.file) {
@@ -34,7 +35,7 @@ function copyAllFiles(req, res, savPath) {
   }
 
   textract.fromFileWithPath(srcPath, function(error, text) {
-    console.log(srcPath);
+    console.log(error);
     if (text != null) {
       filecontent += text;
     }
@@ -157,7 +158,7 @@ function verifyItem(res, item, callback) {
 router.post("/", upload.single("fileInputName"), function(req, res, next) {
   counter = 0;
   fs.writeFileSync("./views/result.html", upper);
-  copyAllFiles(req, res, "./saved/thelist.txt");
+  copyAllFiles(req, res);
 });
 
 module.exports = router;

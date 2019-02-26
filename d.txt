@@ -1,9 +1,0 @@
-Below are some of my skills:
-- Proficient in ReactJs
-- thorough knowledge of flux architecture, redux and react-router
-- Familiar with Browser Development Tools
-- hands-on experience with node.js, swagger
-- Worked with various module bundlers like webpack, gulp, and grunt
-- Dbs: Mongo, Dynamo, MySql
-- Development Technologies like Jenkins, Docker, CI, CD
-- AWS for hosting services like EC2, S3, ELB

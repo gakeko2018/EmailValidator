@@ -1,0 +1,54 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00b7ff;
+}
+
+.row {
+  margin-top: 20px;
+  width: 50vw;
+  min-width: 200px;
+}
+
+.addEmail {
+}
+.or {
+  text-align: center;
+}
+.or label {
+  color: black;
+  align-items: center;
+
+  font-weight: 300;
+}
+.submit {
+  text-align: center;
+}
+#textarea1 {
+  max-height: 30vh;
+  overflow: auto;
+}
+
+#loader {
+  text-align: center;
+}
+
+
+
+
+nav .button-collapse i {
+  height: 30px;
+  line-height: 30px;
+}
+
+nav .brand-logo { 
+  font-size: 1.6rem; 
+}
+
+#api {
+  background-color: rgb(255, 218, 170);
+  color:red;
+}

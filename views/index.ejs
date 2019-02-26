@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bulk Email Checker</title>
+
+    <!--Import Google Icon Font-->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <!--Import materialize.css-->
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="stylesheets/materialize.min.css"
+      media="screen,projection"
+    />
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <nav>
+        <div class="nav-wrapper">
+          <a href="/" class="brand-logo"
+            ><i class="material-icons">email</i>EmC</a
+          >
+          <ul class="right hide-on-med-and-down"></ul>
+        </div>
+      </nav>
+    </div>
+    <main>
+      <div class="row ">
+        <form
+          name="myForm"
+          action="/upload"
+          method="post"
+          encType="multipart/form-data"
+          class="col s12"
+          onsubmit="foo()"
+        >
+          <div class="row addEmail">
+            <div class="input-field col s12">
+              <textarea
+                id="textarea1"
+                name="textarea1"
+                class="materialize-textarea"
+                placeholder="Add your emails here..."
+              ></textarea>
+              <label for="textarea1"></label>
+            </div>
+          </div>
+
+          <div class="row or">
+            <label>AND / OR</label>
+          </div>
+          <div class="row">
+            <div class="file-field input-field">
+              <div class="btn">
+                <span>File</span>
+                <input
+                  type="file"
+                  id="fileInputName"
+                  name="fileInputName"
+                  accept="application/vnd.ms-excel, application/msword, text/plain, .csv, .xlsx, .docx"
+                />
+              </div>
+              <div class="file-path-wrapper">
+                <input
+                  id="fileinput1"
+                  class="file-path validate"
+                  type="text"
+                  placeholder="Please select a file."
+                />
+              </div>
+            </div>
+          </div>
+          <div class="row submit">
+            <button
+              class="btn waves-effect waves-light"
+              type="submit"
+              name="action"
+            >
+              Submit
+              <i class="material-icons right">send</i>
+            </button>
+          </div>
+        </form>
+      </div>
+      <div class="row">
+        <div class="card teal">
+          <div class="card-content white-text">
+            <span class="card-title">API usage for developers:</span>
+            <p>GET Request : /query?email=example@domain.com</p>
+            <p>
+              Result: [["example@domain.com",false,"Verification Control
+              Completed"]]
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+    <!--JavaScript at end of body for optimized loading-->
+
+    <!-- Modal Structure -->
+    <div id="modal1" class="modal">
+      <div class="modal-content">
+        <h4>Please wait.</h4>
+        <p>Your request is in progres...</p>
+      </div>
+      <div id="loader" class="row">
+        <div class="preloader-wrapper small active">
+          <div class="spinner-layer spinner-green-only">
+            <div class="circle-clipper left">
+              <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+              <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+              <div class="circle"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script
+      type="text/javascript"
+      src="javascripts/materialize.min.js"
+    ></script>
+
+    <script>
+      M.AutoInit();
+
+      function foo() {
+        var instance = M.Modal.getInstance(modal1);
+        instance.open();
+      }
+    </script>
+  </body>
+</html>
